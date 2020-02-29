@@ -7,6 +7,6 @@ Link to overleaf (non editable): https://es.overleaf.com/read/jkpmphqmhkqq
 | Name | Email |
 |:----:|:------|
 | Yixiong Yang | yixiong@cvc.uab.es |
-| Sanket | | sanketbiswas1995@gmail.com |
+| Sanket Biswas | sanketbiswas1995@gmail.com |
 | Ruben Bagan | ruben.bagan@gmail.com |
 
