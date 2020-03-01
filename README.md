@@ -1,10 +1,12 @@
-# MCV_M5
+# Master in computer vision (MCV): M5 Visual Recognition Module
 
-Group 
+Link to overleaf (non editable): https://es.overleaf.com/read/jkpmphqmhkqq
 
-Yixiong Yang   yixiong@cvc.uab.es
+## Credits
 
-Sanket
-
-Ruben
+| Name | Email |
+|:----:|:------|
+| Yixiong Yang | yixiong@cvc.uab.es |
+| Sanket Biswas | sanketbiswas1995@gmail.com |
+| Ruben Bagan | ruben.bagan@gmail.com |
 
