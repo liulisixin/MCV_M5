@@ -107,8 +107,10 @@ class Net(nn.Module):
             kernel_size=(3,3),
             stride=(2, 2)
         )
-        self.act = nn.ReLU()
-        self.adapt = nn.AdaptiveAvgPool2d(1)
+        self.batchNorm = nn.BatchNorm2d(62)
+        self.flatt = nn.Flatten()
+        self.linear = nn.Linear(558,8)
+        self.soft = nn.Softmax(dim=1)
 
     def forward(self, x):
         x = self.block1(x)
@@ -126,9 +128,9 @@ class Net(nn.Module):
         x = self.block9(x)
         x = self.block10(x)
         x = self.maxPooling4(x)
-        x = self.act(x)
-        x = self.adapt(x)
-        x = torch.squeeze(x)
+        x = self.batchNorm(x)
+        x = x.view(x.size(0), -1)
+        x = self.linear(x)
         return x
 
 def create_datasets(img_size, batch_size, train_dataset_path, test_dataset_path):
@@ -210,7 +212,7 @@ def plot(history):
     plt.ylabel('accuracy')
     plt.xlabel('epoch')
     plt.legend(['train', 'validation'], loc='upper left')
-    plt.savefig('accuracy.jpg')
+    plt.savefig('accuracy_soft.jpg')
     plt.close()
     # summarize history for loss
     plt.plot(history['loss']['train'])
@@ -219,7 +221,7 @@ def plot(history):
     plt.ylabel('loss')
     plt.xlabel('epoch')
     plt.legend(['train', 'validation'], loc='upper left')
-    plt.savefig('loss.jpg')
+    plt.savefig('loss_soft.jpg')
     plt.close()
 
 def main():
