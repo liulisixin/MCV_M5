@@ -9,6 +9,8 @@ import torch.nn as nn
 
 import torch.optim as optim
 
+from tqdm import tqdm
+
 
 class Net(nn.Module):
     def __init__(self):
@@ -49,6 +51,7 @@ class Net(nn.Module):
 
         return x
 
+
 # Show the example images
 def imshow(img):
     img = img / 2 + 0.5  # unnormalize
@@ -57,20 +60,97 @@ def imshow(img):
     plt.show()
 
 
+def train_one_epoch(model, loader, criterion, optimizer):
+    model.train()  # set model to training mode
+
+    running_loss = 0
+    running_corrects = 0
+    total = 0
+
+    for data, labels in loader:
+        optimizer.zero_grad()  # make the gradients 0
+
+        x = data.cuda()
+        y = labels.cuda()
+
+        output = model(x)  # forward pass
+        loss = criterion(output, y)  # calculate the loss value
+        preds = output.max(1)[1]  # get the predictions for each sample
+
+        loss.backward()  # compute the gradients
+        optimizer.step()  # uptade network parameters
+
+        # statistics
+        running_loss += loss.item() * x.size(0)
+        # .item() converts type from torch to python float or int
+        running_corrects += torch.sum(preds == y).item()
+        total += float(y.size(0))
+
+    epoch_loss = running_loss / total  # mean epoch loss
+    epoch_acc = running_corrects / total  # mean epoch accuracy
+
+    return epoch_loss, epoch_acc
+
+
+def test_one_epoch(model, loader, criterion):
+    model.eval()  # set model to validation mode
+
+    running_loss = 0
+    running_corrects = 0
+    total = 0
+
+    # We are not backpropagating through the validation set, so we can save time  and memory
+    # by not computing the gradients
+    with torch.no_grad():
+        for data, labels in loader:
+            x = data.cuda()
+            y = labels.cuda()
+
+            output = model(x)  # forward pass
+
+            # Calculate the loss value (we do not to apply softmax to our output because Pytorch's
+            # implementation of the cross entropy loss does it for us)
+            loss = criterion(output, y)
+            preds = output.max(1)[1]  # get the predictions for each sample
+
+            # Statistics
+            running_loss += loss.item() * x.size(0)
+            # .item() converts type from torch to python float or int
+            running_corrects += torch.sum(preds == y).item()
+            total += float(y.size(0))
+
+    epoch_loss = running_loss / total  # mean epoch loss
+    epoch_acc = running_corrects / total  # mean epoch accuracy
+
+    return epoch_loss, epoch_acc,
+
+def plot_history(train_accuracy, test_accuracy, train_loss, test_loss, title = "pic_"):
+    # summarize history for accuracy
+    plt.plot(train_accuracy)
+    plt.plot(test_accuracy)
+    plt.title('model accuracy')
+    plt.ylabel('accuracy')
+    plt.xlabel('epoch')
+    plt.legend(['train', 'validation'], loc='upper left')
+    plt.savefig(title+'accuracy.png')
+    plt.close()
+    # summarize history for loss
+    plt.plot(train_loss)
+    plt.plot(test_loss)
+    plt.title('model loss')
+    plt.ylabel('loss')
+    plt.xlabel('epoch')
+    plt.legend(['train', 'validation'], loc='upper left')
+    plt.savefig(title+'loss.png')
+    plt.close()
+
 if __name__ == "__main__":
     params = {
         # MODEL,
         "batch_size": 16,
         #"optimizer": "SGD",
-        "lr": 4.300e-05,
-        "momentum": 0.879961,
-        "decay": 8.946e-05,
-
-        "rescale": 1.0,
-        "zoom": 0.077509,
-        "shear": 0.000586,
-        "hflip": True,
-        #"callback": callbacks,
+        "lr": 0.001,
+        "momentum": 0.9,
     }
 
     print("Running With:")
@@ -78,14 +158,15 @@ if __name__ == "__main__":
 
     show_example = False
 
-    #load the data of train and test
-    transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5,0.5,0.5),(0.5,0.5,0.5))])
+    # load the data of train and test
+    # transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5,0.5,0.5),(0.5,0.5,0.5))])
+    transform = transforms.Compose([transforms.ToTensor()])
 
-    train_path = "MIT_split/train"
+    train_path = "../MIT_split/train"
     train_set = torchvision.datasets.ImageFolder(train_path,transform=transform)
     train_loader = torch.utils.data.DataLoader(train_set, batch_size = params["batch_size"], shuffle = True)
 
-    test_path = "MIT_split/test"
+    test_path = "../MIT_split/test"
     test_set = torchvision.datasets.ImageFolder(test_path, transform=transform)
     test_loader = torch.utils.data.DataLoader(test_set, batch_size=params["batch_size"], shuffle=False)
 
@@ -106,49 +187,34 @@ if __name__ == "__main__":
 
     # Define a Loss function and optimizer
     criterion = nn.CrossEntropyLoss()
-    # optimizer = optim.SGD(net.parameters(), lr=params["lr"], momentum=params["momentum"], weight_decay=params["decay"])
-    optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
+    optimizer = optim.SGD(net.parameters(), lr=params["lr"], momentum=params["momentum"])
 
     # train the network
-    for epoch in range(40):
-        running_loss = 0.0
-        for i, data in enumerate(train_loader, 0):
-            inputs, labels = data[0].cuda(), data[1].cuda()
+    train_accuracy = []
+    test_accuracy = []
+    train_loss = []
+    test_loss = []
+    best_test_accuracy = 0.0
 
-            optimizer.zero_grad()
+    for epoch in tqdm(range(40)):
+        loss, acc = train_one_epoch(net, train_loader, criterion, optimizer)
+        train_loss.append(loss)
+        train_accuracy.append(acc)
+        print('[%d] train loss: %.3f train acc: %.3f' % (epoch + 1, loss, acc))
 
-            outputs = net(inputs)
-            loss = criterion(outputs, labels)
-            loss.backward()
-            optimizer.step()
 
-            running_loss += loss.item()
-            if i % 5 == 4:
-                print('[%d, %5d] loss: %.3f' %(epoch+1,i+1,running_loss/5))
-                running_loss = 0.0
+        loss, acc = test_one_epoch(net, test_loader, criterion)
+        test_loss.append(loss)
+        test_accuracy.append(acc)
+        print('[%d] test loss: %.3f test acc: %.3f' % (epoch + 1, loss, acc))
+        if acc > best_test_accuracy:
+            best_test_accuracy = acc
 
-    print('Finished training')
+    plot_history(train_accuracy, test_accuracy, train_loss, test_loss)
+    print('Best acc: %.3f' % (best_test_accuracy))
 
-    #save the trained model
-    PATH = './trained_model.pth'
-    torch.save(net.state_dict(), PATH)
-    # if want to load
-    # net = Net()
-    # net.load_state_dict(torch.load(PATH))
 
-    if show_example:
-        dataiter = iter(test_loader)
-        images, labels = dataiter.next()
-
-        # print images
-        imshow(torchvision.utils.make_grid(images))
-        print('GroundTruth: ', ' '.join('%5s' % test_loader.dataset.classes[labels[j]] for j in range(params["batch_size"])))
-
-        outputs = net(images)
-        _, predicted = torch.max(outputs, 1)
-        print('Predicted: ', ' '.join('%5s' % test_loader.dataset.classes[predicted[j]]
-                                      for j in range(params["batch_size"])))
-
+    """
     # perform on the whole test dataset
     correct = 0
     total = 0
@@ -162,6 +228,28 @@ if __name__ == "__main__":
 
     print('Accuracy of the test dataset is %d %%' %(100*correct/total))
 
+    
+    # save the trained model
+    PATH = './trained_model.pth'
+    torch.save(net.state_dict(), PATH)
+    # if want to load
+    # net = Net()
+    # net.load_state_dict(torch.load(PATH))
+
+    if show_example:
+        dataiter = iter(test_loader)
+        images, labels = dataiter.next()
+
+        # print images
+        imshow(torchvision.utils.make_grid(images))
+        print('GroundTruth: ',
+              ' '.join('%5s' % test_loader.dataset.classes[labels[j]] for j in range(params["batch_size"])))
+
+        outputs = net(images)
+        _, predicted = torch.max(outputs, 1)
+        print('Predicted: ', ' '.join('%5s' % test_loader.dataset.classes[predicted[j]]
+                                      for j in range(params["batch_size"])))
+    
     # calculate the accuracy of each class
     class_correct = list(0. for i in range(8))
     class_total = list(0. for i in range(8))
@@ -179,3 +267,5 @@ if __name__ == "__main__":
     for i in range(8):
         print('Accuracy of %5s : %2d %%' % (
             test_loader.dataset.classes[i], 100 * class_correct[i] / class_total[i]))
+    
+    """
