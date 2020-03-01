@@ -76,41 +76,39 @@ class Net(nn.Module):
             stride=(2, 2)
         )
 
-        self.block3 = SeparableConvBlock(48, 48, (3,3), (1, 1))
-        self.block4 = SeparableConvBlock(48, 48, (3,3), (1, 1))
+        self.block3 = ConvBlock(48, 48, (3,3), (1, 1))
+        self.block4 = ConvBlock(48, 48, (3,3), (1, 1))
 
         self.avgPooling1 = nn.AvgPool2d(
             kernel_size=(3,3),
             stride=(2,2)
         )
         
-        self.block5 = SeparableConvBlock(48, 62, (3,3), (1, 1))
-        self.block6 = SeparableConvBlock(62, 62, (3,3), (1, 1))
+        self.block5 = ConvBlock(48, 62, (3,3), (1, 1))
+        self.block6 = ConvBlock(62, 62, (3,3), (1, 1))
 
         self.avgPooling2 = nn.AvgPool2d(
             kernel_size=(3,3),
             stride=(2,2)
         )
         
-        self.block7 = SeparableConvBlock(62, 62, (3,3), (1, 1))
-        self.block8 = SeparableConvBlock(62, 62, (3,3), (1, 1))
+        self.block7 = ConvBlock(62, 62, (3,3), (1, 1))
+        self.block8 = ConvBlock(62, 62, (3,3), (1, 1))
         
         self.avgPooling3 = nn.AvgPool2d(
             kernel_size=(3,3),
             stride=(2,2)
         )
         
-        self.block9 = SeparableConvBlock(62, 62, (3,3), (1, 1))
-        self.block10 = SeparableConvBlock(62, 62, (3,3), (1, 1))
+        self.block9 = ConvBlock(62, 62, (3,3), (1, 1))
+        self.block10 = ConvBlock(62, 62, (3,3), (1, 1))
         
         self.maxPooling4 = nn.MaxPool2d(
             kernel_size=(3,3),
             stride=(2, 2)
         )
-        self.batchNorm = nn.BatchNorm2d(62)
-        self.flatten = nn.Flatten()
-        self.dense = nn.Linear(in_features=558, out_features=8)
-        self.soft = nn.Softmax()
+        self.act = nn.ReLU()
+        self.adapt = nn.AdaptiveAvgPool2d(1)
 
     def forward(self, x):
         x = self.block1(x)
@@ -128,10 +126,9 @@ class Net(nn.Module):
         x = self.block9(x)
         x = self.block10(x)
         x = self.maxPooling4(x)
-        x = self.batchNorm(x)
-        x = self.flatten(x)
-        x = self.dense(x)
-        x = self.soft(x)
+        x = self.act(x)
+        x = self.adapt(x)
+        x = torch.squeeze(x)
         return x
 
 def create_datasets(img_size, batch_size, train_dataset_path, test_dataset_path):
@@ -139,7 +136,6 @@ def create_datasets(img_size, batch_size, train_dataset_path, test_dataset_path)
     transform = transforms.Compose([
         transforms.Resize((256,256)),
         transforms.ToTensor(),
-        transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
     ])
 
     train_dataset = torchvision.datasets.ImageFolder(root=train_dataset_path, transform=transform)
@@ -158,7 +154,7 @@ def create_datasets(img_size, batch_size, train_dataset_path, test_dataset_path)
 
 def generate_optimizer(type, net):
     if type.lower() == 'adam':
-        return optim.Adam(net.parameters())
+        return optim.Adam(net.parameters(), lr=0.001)
     elif type.lower() == 'adadelta':
         return optim.Adadelta(net.parameters())
     raise NotImplementedError
@@ -240,8 +236,7 @@ def main():
     img_width = 256
     img_height = 256
     batch_size = 32
-    number_of_epoch = 10
-
+    number_of_epoch = 50
 
     train_dataset, test_dataset = create_datasets((img_width, img_height), batch_size, train_dataset_path, test_dataset_path)
 
