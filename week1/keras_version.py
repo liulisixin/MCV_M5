@@ -137,7 +137,7 @@ def tune_model(model, epochs, parameters, train_loader, val_loader, fname="model
 
     model.compile(optimizer=optimizer, loss='categorical_crossentropy', metrics=["accuracy", app])
     hist = model.fit_generator(train_loader, epochs=epochs, validation_data=val_loader,
-                                  steps_per_epoch=int(train_loader.samples // parameters['batch_size']), callbacks=[parameters["callback"]])
+                                  steps_per_epoch=int(train_loader.samples // parameters['batch_size']))
 
 
     return hist
@@ -250,7 +250,8 @@ model = build_model()
 #        "decay": (1e-3, 1e-5),
 #        "callback": [callbacks],}
 
-model.count_params()
+number_of_parameters = model.count_params()
+print("number of parameters = ", number_of_parameters)
 
 '''
 #parameters = {
@@ -284,8 +285,8 @@ all_hist = random_search(20, "../MIT_split/train", 40, parameters)
 import matplotlib.pyplot as plt
 def plot_history(history,title = "pic_"):
     # summarize history for accuracy
-    plt.plot(history.history['acc'])
-    plt.plot(history.history['val_acc'])
+    plt.plot(history.history['accuracy'])
+    plt.plot(history.history['val_accuracy'])
     plt.title('model accuracy')
     plt.ylabel('accuracy')
     plt.xlabel('epoch')
@@ -308,15 +309,15 @@ params = {
         # MODEL, 
         "batch_size": 16,
         "optimizer": "SGD",
-        "lr": 4.300e-05,
-        "momentum": 0.879961,
-        "decay": 8.946e-05,
+        "lr": 0.001,
+        "momentum": 0.9,
+        "decay": 0.0,
 
-        "rescale": 1.0,
-        "zoom": 0.077509,
-        "shear": 0.000586,
-        "hflip": True,
-        "callback": callbacks,}
+        "rescale": None,
+        "zoom": 0.0,
+        "shear": 0.0,
+        "hflip": False,
+        "callback": None,}
 
 print("Running With:")
 print(params)
