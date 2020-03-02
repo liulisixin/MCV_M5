@@ -10,6 +10,8 @@ Link to overleaf (non editable): https://es.overleaf.com/read/jkpmphqmhkqq
 
 ### Week 1
 * Slides: https://docs.google.com/presentation/d/169s5x1e9TEeDZlBNCVuwIWeYEQtlGO_WIN30iOxkPE0/edit?usp=sharing
+* Code: the source code is located on folder Week1. 
+* Run code: You can run it using `sbatch job_ruben` and it will tigger the Pytorch ruben version same with the Keras version.
 
 ## Credits
 
