@@ -7,6 +7,7 @@ import torchvision.transforms as transforms
 import torch.nn.functional as f
 import torch.optim as optim
 import matplotlib.pyplot as plt
+from torchsummary import summary
 
 class SeparableConv2d(nn.Module):
     def __init__(self, in_channels, out_channels, kernel_size, stride):
@@ -107,8 +108,10 @@ class Net(nn.Module):
             kernel_size=(3,3),
             stride=(2, 2)
         )
-        self.act = nn.ReLU()
-        self.adapt = nn.AdaptiveAvgPool2d(1)
+        self.batchNorm = nn.BatchNorm2d(62)
+        self.flatt = nn.Flatten()
+        self.linear = nn.Linear(558,8)
+        self.soft = nn.Softmax(dim=1)
 
     def forward(self, x):
         x = self.block1(x)
@@ -126,16 +129,17 @@ class Net(nn.Module):
         x = self.block9(x)
         x = self.block10(x)
         x = self.maxPooling4(x)
-        x = self.act(x)
-        x = self.adapt(x)
-        x = torch.squeeze(x)
+        x = self.batchNorm(x)
+        x = x.view(x.size(0), -1)
+        x = self.linear(x)
         return x
 
 def create_datasets(img_size, batch_size, train_dataset_path, test_dataset_path):
     # Prepare the datasets
     transform = transforms.Compose([
-        transforms.Resize((256,256)),
+        transforms.Resize(img_size),
         transforms.ToTensor(),
+        transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
     ])
 
     train_dataset = torchvision.datasets.ImageFolder(root=train_dataset_path, transform=transform)
@@ -157,17 +161,22 @@ def generate_optimizer(type, net):
         return optim.Adam(net.parameters(), lr=0.001)
     elif type.lower() == 'adadelta':
         return optim.Adadelta(net.parameters())
+    elif type.lower() == 'sgd':
+        return optim.SGD(net.parameters(), lr=0.0001)
     raise NotImplementedError
 
 def train_model(train_dataset, net, device, optimizer, criterion):
+    # https://stackoverflow.com/questions/51433378/what-does-model-train-do-in-pytorch
     train_loss = 0.0
     train_acc = 0.0
     total = 0.0
+    
+    net.train()
     for data in train_dataset:
         # get the inputs; data is a list of [inputs, labels]
         inputs, labels = data
-        inputs = inputs.to(device)
-        labels = labels.to(device)
+        inputs = inputs.cuda()
+        labels = labels.cuda()
 
         # zero the parameter gradients
         optimizer.zero_grad()
@@ -181,18 +190,21 @@ def train_model(train_dataset, net, device, optimizer, criterion):
         _, predicted = torch.max(outputs.data, 1)
         train_acc += (predicted == labels).sum().item()
         train_loss += loss.item() * inputs.size(0)
-        total += labels.size(0)
+        total += float(labels.size(0))
     return train_loss / total, train_acc / total
 
 def test_model(test_dataset, net, device, criterion):
+    # https://stackoverflow.com/questions/51433378/what-does-model-train-do-in-pytorch
     val_loss = 0.0
     val_acc = 0.0
     total = 0.0
-    with torch.no_grad():
-        for data in test_dataset:
+    
+    net.eval()
+    for data in test_dataset:
+        with torch.no_grad():
             inputs, labels = data
-            inputs = inputs.to(device)
-            labels = labels.to(device)
+            inputs = inputs.cuda()
+            labels = labels.cuda()
 
             outputs = net(inputs)
             loss = criterion(outputs, labels)
@@ -200,7 +212,7 @@ def test_model(test_dataset, net, device, criterion):
             _, predicted = torch.max(outputs.data, 1)
             val_acc += (predicted == labels).sum().item()
             val_loss += loss.item() * inputs.size(0)
-            total += labels.size(0)
+            total += float(labels.size(0))
     return val_loss / total, val_acc / total
 
 def plot(history):
@@ -210,7 +222,7 @@ def plot(history):
     plt.ylabel('accuracy')
     plt.xlabel('epoch')
     plt.legend(['train', 'validation'], loc='upper left')
-    plt.savefig('accuracy.jpg')
+    plt.savefig('accuracy2_50_epoch.jpg')
     plt.close()
     # summarize history for loss
     plt.plot(history['loss']['train'])
@@ -219,7 +231,7 @@ def plot(history):
     plt.ylabel('loss')
     plt.xlabel('epoch')
     plt.legend(['train', 'validation'], loc='upper left')
-    plt.savefig('loss.jpg')
+    plt.savefig('loss2_100_epoch.jpg')
     plt.close()
 
 def main():
@@ -235,15 +247,18 @@ def main():
     test_dataset_path = '/home/mcv/datasets/MIT_split/test/'
     img_width = 256
     img_height = 256
-    batch_size = 32
-    number_of_epoch = 50
+    batch_size = 8
+    number_of_epoch = 100
+    print(number_of_epoch)
 
     train_dataset, test_dataset = create_datasets((img_width, img_height), batch_size, train_dataset_path, test_dataset_path)
 
-    net = Net().to(device)
 
+    net = Net().cuda()
     criterion = nn.CrossEntropyLoss()
-    optimizer = generate_optimizer('adam', net)
+    optimizer = generate_optimizer('sgd', net)
+    summary(net, (3, img_width, img_height))
+
 
     history = {'acc' : {'train' : [], 'val' : []}, 'loss' : {'train' : [], 'val' : []}}
     for epoch in range(number_of_epoch):  # loop over the dataset multiple times
