@@ -183,6 +183,12 @@ if __name__ == "__main__":
 
     # Define network
     net = Net()
+
+    num_params = 0
+    for param in net.parameters():
+        num_params += param.numel()
+    print(num_params)
+
     net.cuda()
 
     # Define a Loss function and optimizer
