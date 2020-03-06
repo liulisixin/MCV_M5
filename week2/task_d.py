@@ -43,6 +43,7 @@ def kitti_dataset(img_dir):
             record['height'] = height
             record['width'] = width
             record['image_id'] = image_id
+            record['iscrowd'] = 0
             
             gt_file = gt_files[image_id]
             gt_file_content = open(gt_file, 'r').readline().strip()
@@ -76,13 +77,13 @@ cfg = get_cfg()
 cfg.merge_from_file(model_zoo.get_config_file(model))
 cfg.DATASETS.TRAIN = ("kitti_training",)
 cfg.DATASETS.TEST = ()
-cfg.DATALOADER.NUM_WORKERS = 2
+cfg.DATALOADER.NUM_WORKERS = 4
 cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url(model)  # Let training initialize from model zoo
-cfg.SOLVER.IMS_PER_BATCH = 2
+cfg.SOLVER.IMS_PER_BATCH = 16
 cfg.SOLVER.BASE_LR = 0.00025  # pick a good LR
 cfg.SOLVER.MAX_ITER = 300    # 300 iterations seems good enough for this toy dataset; you may need to train longer for a practical dataset
-cfg.MODEL.ROI_HEADS.BATCH_SIZE_PER_IMAGE = 32   # faster, and good enough for this toy dataset (default: 512)
-cfg.MODEL.ROI_HEADS.NUM_CLASSES = 1  # only has one class (ballon)
+cfg.MODEL.ROI_HEADS.BATCH_SIZE_PER_IMAGE = 512   # faster, and good enough for this toy dataset (default: 512)
+cfg.MODEL.ROI_HEADS.NUM_CLASSES = 9
 
 os.makedirs(cfg.OUTPUT_DIR, exist_ok=True)
 trainer = DefaultTrainer(cfg) 
