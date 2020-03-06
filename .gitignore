@@ -1,6 +1,8 @@
 
 *.xml
-*.jpg
+*.out
+*.err
 *.iml
 *.pth
-*.png
+
+
