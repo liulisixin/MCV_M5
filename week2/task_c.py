@@ -2,6 +2,7 @@ import cv2
 import os
 import numpy as np
 import json
+import datetime
 from random import randint
 from detectron2.structures import BoxMode
 from detectron2.engine import DefaultTrainer
@@ -12,9 +13,12 @@ from detectron2.config import get_cfg
 from detectron2.utils.visualizer import Visualizer
 from detectron2.data import MetadataCatalog
 
+prefix = 'retina_r_101_fpn_x3_th_50'
+
 def write_images_into_disk(images):
     for idx, image in enumerate(images):
-        cv2.imwrite('output/retina_sample_{}.png'.format(idx), image)
+        now = datetime.datetime.now()
+        cv2.imwrite('output/task_c_sample_{}_{}_{}_{}_{}.png'.format(prefix, idx, now.hour, now.minute, now.second), image)
 
 def read_samples_from_disk(samples):
     images = []
@@ -36,7 +40,8 @@ def inference(images, model):
 
         v = Visualizer(image[:, :, ::-1], MetadataCatalog.get(cfg.DATASETS.TRAIN[0]), scale=1.2)
         v = v.draw_instance_predictions(outputs["instances"].to("cpu"))
-        cv2.imwrite('output/retina_inference_{}.png'.format(idx), v.get_image()[:, :, ::-1])
+        now = datetime.datetime.now()
+        cv2.imwrite('output/task_c_inference_{}_{}_{}_{}_{}.png'.format(prefix, idx, now.hour, now.minute, now.second), v.get_image()[:, :, ::-1])
 
 samples = [
     '/home/mcv/m5/datasets/MIT_split/train/Opencountry/fie23.jpg',
@@ -46,7 +51,7 @@ samples = [
     '/home/mcv/m5/datasets/MIT_split/train/highway/urb681.jpg']
 
 # List of models for retina: https://github.com/facebookresearch/detectron2/blob/master/MODEL_ZOO.md#retinanet
-model = "COCO-Detection/faster_rcnn_R_50_C4_1x.yaml"
+model = "COCO-Detection/retinanet_R_101_FPN_3x.yaml"
 
 images = read_samples_from_disk(samples)
 write_images_into_disk(images)

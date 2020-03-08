@@ -2,6 +2,7 @@ import cv2
 import os
 import numpy as np
 import json
+import datetime
 from random import randint
 from detectron2.structures import BoxMode
 from detectron2.engine import DefaultTrainer
@@ -12,9 +13,12 @@ from detectron2.config import get_cfg
 from detectron2.utils.visualizer import Visualizer
 from detectron2.data import MetadataCatalog
 
+prefix = 'rcnn_r_101_c4_th_50'
+
 def write_images_into_disk(images):
     for idx, image in enumerate(images):
-        cv2.imwrite('output/task_b_sample_{}.png'.format(idx), image)
+        now = datetime.datetime.now()
+        cv2.imwrite('output/task_b_sample_{}_{}_{}_{}_{}.png'.format(prefix, idx, now.hour, now.minute, now.second), image)
 
 def read_samples_from_disk(samples):
     images = []
@@ -26,7 +30,7 @@ def inference(images, model):
     cfg = get_cfg()
     # add project-specific config (e.g., TensorMask) here if you're not running a model in detectron2's core library
     cfg.merge_from_file(model_zoo.get_config_file(model))
-    cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.9  # set threshold for this model
+    cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.5  # set threshold for this model
     # Find a model from detectron2's model zoo. You can use the https://dl.fbaipublicfiles... url as well
     cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url(model)
     predictor = DefaultPredictor(cfg)
@@ -36,7 +40,8 @@ def inference(images, model):
 
         v = Visualizer(image[:, :, ::-1], MetadataCatalog.get(cfg.DATASETS.TRAIN[0]), scale=1.2)
         v = v.draw_instance_predictions(outputs["instances"].to("cpu"))
-        cv2.imwrite('output/task_b_inference_{}.png'.format(idx), v.get_image()[:, :, ::-1])
+        now = datetime.datetime.now()
+        cv2.imwrite('output/task_b_inference_{}_{}_{}_{}_{}.png'.format(prefix, idx, now.hour, now.minute, now.second), v.get_image()[:, :, ::-1])
 
 samples = [
     '/home/mcv/m5/datasets/MIT_split/train/Opencountry/fie23.jpg',
@@ -46,7 +51,7 @@ samples = [
     '/home/mcv/m5/datasets/MIT_split/train/highway/urb681.jpg']
     
 # List of models for faster RCNN: https://github.com/facebookresearch/detectron2/blob/master/MODEL_ZOO.md#faster-r-cnn
-model = "COCO-Detection/faster_rcnn_R_50_C4_1x.yaml"
+model = "COCO-Detection/faster_rcnn_R_101_C4_3x.yaml"
 
 images = read_samples_from_disk(samples)
 write_images_into_disk(images)

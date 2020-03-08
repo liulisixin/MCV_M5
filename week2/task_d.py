@@ -55,11 +55,13 @@ def kitti_dataset(img_dir):
             bbox_right = gt[6]
             bbox_bottom = gt[7]
             
-            annotations = {
-                "bbox" : [bbox_left, bbox_top, bbox_right, bbox_bottom],
-                "bbox_mode" : BoxMode.XYXY_ABS,
-                "category_id" : classes[category]
-            }
+            annotations = [
+                {
+                    "bbox" : [bbox_left, bbox_top, bbox_right, bbox_bottom],
+                    "bbox_mode" : BoxMode.XYXY_ABS,
+                    "category_id" : classes[category]
+                }
+            ]
             record['annotations'] = annotations
             dataset_dicts.append(record)
     return dataset_dicts
