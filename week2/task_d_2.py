@@ -20,8 +20,8 @@ from detectron2.data import DatasetCatalog, MetadataCatalog
 import random
 
 def kitti_dataset(img_dir):
-    #dataset_location = '../../KITTI/data_object_image_2/{}/image_2'.format(img_dir)
-    dataset_location = '../../KITTI/data_object_image_2/{}'.format(img_dir)
+    dataset_location = '../../KITTI/data_object_image_2/{}/image_2'.format(img_dir)
+    # dataset_location = '../../KITTI/data_object_image_2/{}'.format(img_dir)
     gt_location = '../../KITTI/training/label_2/'
     classes = {
         'Car' : 0, 
@@ -83,14 +83,14 @@ def kitti_dataset(img_dir):
 
 
 if __name__ == "__main__":
-    for dataset_type in ['testing/image_2']:
+    for dataset_type in ['testing']:
         DatasetCatalog.register("kitti_{}".format(dataset_type), lambda dataset_type = dataset_type : kitti_dataset(dataset_type))
         MetadataCatalog.get("kitti_{}".format(dataset_type)).set(
             thing_classes=['Car', 'Van', 'Truck', 'Pedestrian', 'Person_sitting',
                            'Cyclist', 'Tram', 'Misc', 'DontCare'])
-    kitti_metadata = MetadataCatalog.get("kitti_testing/image_2")
+    kitti_metadata = MetadataCatalog.get("kitti_testing")
 
-    model = "COCO-Detection/faster_rcnn_R_50_C4_1x.yaml"
+    model = "COCO-Detection/faster_rcnn_X_101_32x8d_FPN_3x.yaml"
 
     cfg = get_cfg()
     cfg.merge_from_file(model_zoo.get_config_file(model))
@@ -107,16 +107,21 @@ if __name__ == "__main__":
     os.makedirs(cfg.OUTPUT_DIR, exist_ok=True)
 
     cfg.MODEL.WEIGHTS = os.path.join(cfg.OUTPUT_DIR, "model_final.pth")
-    cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.7  # set the testing threshold for this model
-    cfg.DATASETS.TEST = ("kitti_val",)
+    print("cfg.MODEL.WEIGHTS = ", cfg.MODEL.WEIGHTS)
+    cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.5  # set the testing threshold for this model
+    cfg.DATASETS.TEST = ("kitti_testing",)
     predictor = DefaultPredictor(cfg)
 
     from detectron2.utils.visualizer import ColorMode
 
-    dataset_dicts = kitti_dataset("testing/image_2")
-    for d in random.sample(dataset_dicts, 3):
+    dataset_dicts = kitti_dataset("testing")
+    #for d in random.sample(dataset_dicts, 3):
+    for i in range(5):
+        d = dataset_dicts[i]
+        print(d)
         im = cv2.imread(d["file_name"])
         outputs = predictor(im)
+        print(outputs)
         v = Visualizer(im[:, :, ::-1],
                        metadata=kitti_metadata,
                        scale=0.8,
