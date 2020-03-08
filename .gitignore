@@ -4,5 +4,6 @@
 *.err
 *.iml
 *.pth
-
+*.png
+*.jpg
 
