@@ -14,7 +14,7 @@ Link to overleaf (updated with Related Work): https://www.overleaf.com/project/5
 * Run code: You can run it using `sbatch job_ruben` and it will tigger the Pytorch ruben version same with the Keras version.
 
 ### Week 2
-* Slides: https://docs.google.com/presentation/d/14V1yCVCiOaDklb_7u7BKgAKRDSIhGrjze1V1CBX6Qm0/edit#slide=id.p
+* Slides: https://docs.google.com/presentation/d/1mHO-So5vzC89FCnZvbcdVUSzPMOTXorG-V8YU6ntmSA/edit?usp=sharing
 * Code: Week 2
 * Run code: `sbatch job_task_x` where x could be B,C or D.
 
