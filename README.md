@@ -4,7 +4,7 @@ Team 06 repository
 
 # Documentation
 
-Link to overleaf (updated with Related Work): https://www.overleaf.com/project/5e5a662524585600013f0fc3 
+Link to overleaf (updated with Related Work): https://es.overleaf.com/read/jkpmphqmhkqq
 
 ## Reports
 
