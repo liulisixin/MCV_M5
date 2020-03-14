@@ -46,7 +46,7 @@ if __name__ == "__main__":
     # gt = read_txt(gt_file)
     gt_path = "../../KITTI-MOTS/instances_txt/"
     gt_transformed_path = "./gt_transformed/"
-    thing_classes = ['Car', 'Pedestrian']
+    thing_classes = ['Car', 'Pedestrian', 'No_care']
     for gt_id, gt_txt in enumerate(os.listdir(gt_path)):
         gt_index_str = gt_txt.split(".")[0]
         gt_file = "{}{}".format(gt_path, gt_txt)
@@ -57,10 +57,12 @@ if __name__ == "__main__":
             f = open(filename, 'w+')
             for i in range(len(frame)):
                 line = []
-                if frame[i]["class_id"] == 2:
+                if frame[i]["class_id"] == 1:
                     line.append(thing_classes[0])
-                else:
+                elif frame[i]["class_id"] == 2:
                     line.append(thing_classes[1])
+                else:
+                    line.append(thing_classes[2])
                 line.append(-1)
                 line.append(-1)
                 line.append(-10)
