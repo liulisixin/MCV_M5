@@ -30,6 +30,9 @@ def read_txt(gt_file):
             gt_one_frame.append(instance)
         else:
             gt.append(gt_one_frame)
+            if time_frame != len(gt):
+                #raise Exception("time_frame != len(gt)")
+                print("error")
             gt_one_frame = []
             gt_one_frame.append(instance)
 
@@ -46,7 +49,7 @@ if __name__ == "__main__":
     # gt = read_txt(gt_file)
     gt_path = "../../KITTI-MOTS/instances_txt/"
     gt_transformed_path = "./gt_transformed/"
-    thing_classes = ['Car', 'Pedestrian', 'No_care']
+    thing_classes = ['Car', 'Pedestrian', 'DontCare']
     for gt_id, gt_txt in enumerate(os.listdir(gt_path)):
         gt_index_str = gt_txt.split(".")[0]
         gt_file = "{}{}".format(gt_path, gt_txt)
