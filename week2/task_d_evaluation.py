@@ -147,7 +147,7 @@ if __name__ == "__main__":
             line.append(-1000)
             line.append(-1000)
             line.append(-1000)
-			line.append(-1000)
+            line.append(-1000)
             line.append(scores[i])
             print(" ".join(str(i) for i in line), file=f)
         f.close()
