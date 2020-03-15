@@ -11,7 +11,8 @@
     },
     "gt" :
     {
-        "KITTI-MOTS" : "/home/mcv/datasets/KITTI-MOTS/instances_txt"
+        "KITTI-MOTS" : "/home/mcv/datasets/KITTI-MOTS/instances_txt",
+        "MOTSChallenge" : "/home/mcv/datasets/MOTSChallenge/train/instances_txt"
     },
     "faster_rcnn_models" : 
     {
@@ -33,12 +34,48 @@
         "R101_x3" : "COCO-Detection/retinanet_R_101_FPN_3x.yaml"
     },
     "classes" : {
-        "car" : 1,
-        "pedestrian" : 2
+        "0" : "background",
+        "1" : "car",
+        "2" : "pedestrian",
+        "10" : "ignore"
     },
-    "task_b" : 
+    "task_d" : 
     {
+        "model" : "R50-C4_x1",
         "training" : 0.8,
-        "th" : 0.5        
+        "use_static_training" : true,
+        "dataset_train" : "KITTI-MOTS",
+        "kitti_mots_static_training": {
+            "th" : 0.5,
+            "LR" : 0.00025,
+            "iterations" : 1000,
+            "batch_size" : 128,
+            "num_workers" : 4,
+            "img_per_batch" : 1
+        },
+        "kitti_mots_variable_training" : {
+            "th" : [0.5, 0.8, 0.9],
+            "LR" : [0.00025, 0.001],
+            "iterations" : [1000, 2000],
+            "batch_size" : [128, 256],
+            "num_workers" : [4, 2],
+            "img_per_batch" : [1, 2, 3]
+        },        
+        "MOTSChallenge_static_training": {
+            "th" : 0.5,
+            "LR" : 0.00025,
+            "iterations" : 1000,
+            "batch_size" : 128,
+            "num_workers" : 4,
+            "img_per_batch" : 1
+        },
+        "MOTSChallenge_variable_training" : {
+            "th" : [0.5, 0.8, 0.9],
+            "LR" : [0.00025, 0.001],
+            "iterations" : [1000, 2000],
+            "batch_size" : [128, 256],
+            "num_workers" : [4, 2],
+            "img_per_batch" : [1, 2, 3]
+        }
     }
 }
