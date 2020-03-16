@@ -45,13 +45,16 @@ def write_detection_format(class_str, box, score):
 if __name__ == "__main__":
     dataset_location = "../../KITTI-MOTS/training/image_02/"
     detection_output_path = "./detection/data/"
+    scores_threshold = 0.5
+    # Pre_trained_model = "COCO-Detection/faster_rcnn_X_101_32x8d_FPN_3x.yaml"
+    Pre_trained_model = "COCO-Detection/retinanet_R_101_FPN_3x.yaml"
 
     cfg = get_cfg()
     # add project-specific config (e.g., TensorMask) here if you're not running a model in detectron2's core library
-    cfg.merge_from_file(model_zoo.get_config_file("COCO-Detection/faster_rcnn_X_101_32x8d_FPN_3x.yaml"))
+    cfg.merge_from_file(model_zoo.get_config_file(Pre_trained_model))
     cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.5  # set threshold for this model
     # Find a model from detectron2's model zoo. You can use the https://dl.fbaipublicfiles... url as well
-    cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url("COCO-Detection/faster_rcnn_X_101_32x8d_FPN_3x.yaml")
+    cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url(Pre_trained_model)
     predictor = DefaultPredictor(cfg)
 
 
@@ -73,12 +76,14 @@ if __name__ == "__main__":
             car_index = np.where(classes==2)[0]
             if len(person_index) > 0:
                 for k in range(person_index.shape[0]):
-                    line = write_detection_format("Pedestrian", boxes[person_index[k]], scores[person_index[k]])
-                    print(" ".join(str(i) for i in line), file=f)
+                    if scores[person_index[k]] > scores_threshold:
+                        line = write_detection_format("Pedestrian", boxes[person_index[k]], scores[person_index[k]])
+                        print(" ".join(str(i) for i in line), file=f)
             if len(car_index) > 0:
                 for k in range(car_index.shape[0]):
-                    line = write_detection_format("Car", boxes[car_index[k]], scores[car_index[k]])
-                    print(" ".join(str(i) for i in line), file=f)
+                    if scores[car_index[k]] > scores_threshold:
+                        line = write_detection_format("Car", boxes[car_index[k]], scores[car_index[k]])
+                        print(" ".join(str(i) for i in line), file=f)
             f.close()
 
 

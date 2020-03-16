@@ -30,9 +30,9 @@ def read_txt(gt_file):
             gt_one_frame.append(instance)
         else:
             gt.append(gt_one_frame)
-            if time_frame != len(gt):
-                #raise Exception("time_frame != len(gt)")
-                print("error")
+            # if time_frame != len(gt):
+            #     #raise Exception("time_frame != len(gt)")
+            #     print("error")
             gt_one_frame = []
             gt_one_frame.append(instance)
 
