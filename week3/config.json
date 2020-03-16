@@ -1,0 +1,86 @@
+{
+    "training_datasets" :
+    {
+        "KITTI-MOTS" : "/home/mcv/datasets/KITTI-MOTS/training/image_02",
+        "MOTSChallenge" : "/home/mcv/datasets/MOTSChallenge"
+    },
+    "test_datasets" :
+    {
+        "KITTI-MOTS" : "/home/mcv/datasets/KITTI-MOTS/testing",
+        "MOTSChallenge" : "/home/mcv/datasets/MOTSChallenge"
+    },
+    "gt" :
+    {
+        "KITTI-MOTS" : "/home/mcv/datasets/KITTI-MOTS/instances_txt",
+        "MOTSChallenge" : "/home/mcv/datasets/MOTSChallenge/train/instances_txt"
+    },
+    "faster_rcnn_models" : 
+    {
+        "R50-C4_x1" : "COCO-Detection/faster_rcnn_R_50_C4_1x.yaml",
+        "R50-DC5_x1" : "COCO-Detection/faster_rcnn_R_50_DC5_1x.yaml",
+        "R50-FPN_x1" : "COCO-Detection/faster_rcnn_R_50_FPN_1x.yaml",
+        "R50-C4_x3" : "COCO-Detection/faster_rcnn_R_50_C4_3x.yaml",
+        "R50-DC5_x3" : "COCO-Detection/faster_rcnn_R_50_DC5_3x.yaml",
+        "R50-FPN_x3" : "COCO-Detection/faster_rcnn_R_50_FPN_3x.yaml",
+        "R101-C4_x3" : "COCO-Detection/faster_rcnn_R_101_C4_3x.yaml",
+        "R101-DC5_x3" : "COCO-Detection/faster_rcnn_R_101_DC5_3x.yaml",
+        "R101-FPN_x3" : "COCO-Detection/faster_rcnn_R_101_FPN_3x.yaml",
+        "X101-FPN_x3" : "COCO-Detection/faster_rcnn_X_101_32x8d_FPN_3x.yaml" 
+    },
+    "retina_models" :
+    {
+        "R50_x1" : "COCO-Detection/retinanet_R_50_FPN_1x.yaml",
+        "R50_x3" : "COCO-Detection/retinanet_R_50_FPN_3x.yaml",
+        "R101_x3" : "COCO-Detection/retinanet_R_101_FPN_3x.yaml"
+    },
+    "classes" : {
+        "0" : "background",
+        "1" : "car",
+        "2" : "pedestrian",
+        "10" : "ignore"
+    },
+    "task_b" :
+    {
+        "model" : "R50_x1",
+        "th" : 0.5
+    },
+    "task_d" : 
+    {
+        "model" : "R101-FPN_x3",
+        "training" : 0.8,
+        "use_static_training" : true,
+        "dataset_train" : "KITTI-MOTS",
+        "kitti_mots_static_training": {
+            "th" : 0.8,
+            "LR" : 0.00025,
+            "iterations" : 5000,
+            "batch_size" : 128,
+            "num_workers" : 4,
+            "img_per_batch" : 12
+        },
+        "kitti_mots_variable_training" : {
+            "th" : [0.5, 0.8, 0.9],
+            "LR" : [0.00025, 0.001],
+            "iterations" : [1000, 2000],
+            "batch_size" : [128, 256],
+            "num_workers" : [4, 2],
+            "img_per_batch" : [1, 2, 3]
+        },        
+        "MOTSChallenge_static_training": {
+            "th" : 0.5,
+            "LR" : 0.00025,
+            "iterations" : 1000,
+            "batch_size" : 128,
+            "num_workers" : 4,
+            "img_per_batch" : 1
+        },
+        "MOTSChallenge_variable_training" : {
+            "th" : [0.5, 0.8, 0.9],
+            "LR" : [0.00025, 0.001],
+            "iterations" : [1000, 2000],
+            "batch_size" : [128, 256],
+            "num_workers" : [4, 2],
+            "img_per_batch" : [1, 2, 3]
+        }
+    }
+}

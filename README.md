@@ -18,6 +18,11 @@ Link to overleaf (updated with Related Work): https://es.overleaf.com/read/jkpmp
 * Code: Week 2
 * Run code: `sbatch job_task_x` where x could be B,C or D.
 
+### Week 3
+* Team 06 slides: https://docs.google.com/presentation/d/1KcJaLKY47Jq1Qr72WDtIQA2ZUnPr_JiVQbtodnIZLB8/edit?usp=sharing
+* Slides: https://docs.google.com/presentation/d/1rppl8bJZF5lnt4Qxvoe_KrF_eDC2S-eNhT6g58L_NlE/edit#slide=id.g711500f7df_0_11
+* Code: Week 3
+
 ## Credits
 
 | Name | Email |
