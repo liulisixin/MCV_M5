@@ -23,6 +23,10 @@ Link to overleaf (updated with Related Work): https://es.overleaf.com/read/jkpmp
 * Slides: https://docs.google.com/presentation/d/1rppl8bJZF5lnt4Qxvoe_KrF_eDC2S-eNhT6g58L_NlE/edit#slide=id.g711500f7df_0_11
 * Code: Week 3
 
+### Week 4
+* Slides: https://docs.google.com/presentation/d/1Wxv_nS51v2C9CKlNpzeHORPC9lifEhkCmpZSD9jJOXA/edit#slide=id.g7f4da1844a_0_12
+* Code: Week 4
+
 ## Credits
 
 | Name | Email |
