@@ -24,6 +24,7 @@ Link to overleaf (updated with Related Work): https://es.overleaf.com/read/jkpmp
 * Code: Week 3
 
 ### Week 4
+* Team 06 slides: https://docs.google.com/presentation/d/1y0-lhYYyhSCk8liCfAdRRBXJltzeedJMmWCdd1GY3Ic/edit#slide=id.g6fda4ed841_0_0
 * Slides: https://docs.google.com/presentation/d/1Wxv_nS51v2C9CKlNpzeHORPC9lifEhkCmpZSD9jJOXA/edit#slide=id.g7f4da1844a_0_12
 * Code: Week 4
 
