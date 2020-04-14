@@ -122,10 +122,12 @@ def calculate_idf1(gt, detections_tracks, video_length, IoU_threshold=0.5, verbo
         distances_gt_det = mm.distances.iou_matrix(gt_bboxes, detections_bboxes, max_iou=1.)
         acc.update(gt_ids, detections_ids, distances_gt_det)
 
-    print(acc.mot_events)
+    # print(acc.mot_events)
     mh = mm.metrics.create()
     summary = mh.compute(acc, metrics=mm.metrics.motchallenge_metrics, name='acc')
     print(summary)
+
+    return summary.idf1.acc
 
 
 def tracking_filter(detections_tracks):
