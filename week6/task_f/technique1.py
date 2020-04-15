@@ -23,13 +23,15 @@ if __name__ == "__main__":
         p.close()
 
     track_type = "maximum overlap"
+    missing_chance = 5
+    lou_max_threshold = 0.05
     # track_type = "kalman filter"
-    # kalman_filter_mode = 0
+    # kalman_filter_mode = 1
 
     thing_classes = ['Car', 'Pedestrian']
     num_classes = len(thing_classes)
-    test_seq = [4, 5, 7, 8, 9, 11, 15]
-    # test_seq = [4]
+    # test_seq = [4, 5, 7, 8, 9, 11, 15]
+    test_seq = [7]
     video_length_list = {}
     for id_seq in test_seq:
         count = 0
@@ -72,8 +74,7 @@ if __name__ == "__main__":
             # sort detections for following operations.
             detections.sort(key=lambda x: x['frame'])
 
-            missing_chance = 2
-            lou_max_threshold = 0.05
+
 
             if track_type == "maximum overlap":
                 # maximum overlap
@@ -99,10 +100,14 @@ if __name__ == "__main__":
             detections_tracks_all_labels.extend(detections_tracks)
             tracks_gt_list_all_labels.extend(tracks_gt_list)
 
+        # only output detection
+        # tracks_gt_list_all_labels = []
+
         # addTracksToFrames('{}{}'.format(test_path, str(id_seq).zfill(4)), detections_tracks_all_labels,
         #                   tracks_gt_list_all_labels, start_frame=0, end_frame=video_length,
         #                   name="test_track"+str(id_seq).zfill(4))
-        # addTracksToFrames_gif(video_path, detections_tracks, tracks_gt_list, start_frame=210, end_frame=390, name="test")
+        addTracksToFrames_gif('{}{}'.format(test_path, str(id_seq).zfill(4)), detections_tracks_all_labels,
+                              tracks_gt_list_all_labels, start_frame=220, end_frame=250, name="test")
 
         idf1_list_list.append(idf1_list)
         num_gt_tracks_list_list.append(num_gt_tracks_list)
@@ -110,5 +115,5 @@ if __name__ == "__main__":
     for x in idf1_list_list:
         print(x)
 
-    for x in num_gt_tracks_list_list:
-        print(x)
+    # for x in num_gt_tracks_list_list:
+    #     print(x)

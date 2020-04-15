@@ -32,7 +32,7 @@ def write_one_frame(detections_tracks, frame_id, frameMat, color):
         if flag_shoot:
             shoot_index = index
             # write the line
-            for index in range(shoot_index - 1):
+            for index in range(shoot_index):
                 startPoint = center_of_detection(track_one.detections[index])
                 endPoint = center_of_detection(track_one.detections[index + 1])
                 frameMat = cv2.line(frameMat, startPoint, endPoint, color, 2)
@@ -75,17 +75,24 @@ def addTracksToFrames_gif(framesPath, detections_tracks, tracks_gt_list, start_f
     :param name: name of video.
     :return: None
     """
+    scale = 0.5
+    filename = "{}/{}.png".format(framesPath, str(start_frame).zfill(6))
+    frame_size = cv2.imread(filename).shape
+    size = (int(scale*frame_size[1]), int(scale*frame_size[0]))
+
     images = []
 
     for frame_id in tqdm(range(start_frame, end_frame)):
-        filename = "{}{}.jpg".format(framesPath, str(frame_id).zfill(5))
+        filename = "{}/{}.png".format(framesPath, str(frame_id).zfill(6))
         frameMat = cv2.imread(filename)
         color_detection = (0, 0, 255)
         write_one_frame(detections_tracks, frame_id, frameMat, color_detection)
         color_gt = (255, 0, 0)
         write_one_frame(tracks_gt_list, frame_id, frameMat, color_gt)
-        resized = cv2.resize(frameMat, (480, 270), interpolation=cv2.INTER_AREA)
+        resized = cv2.resize(frameMat, size, interpolation=cv2.INTER_AREA)
         images.append(resized)
+        cv2.imwrite("{}.png".format(str(frame_id)), frameMat)
+    # imageio.mimsave(name + '.gif', images, duration=0.5)
     imageio.mimsave(name + '.gif', images)
 
 
