@@ -4,7 +4,8 @@ Team 06 repository
 
 # Documentation
 
-Link to overleaf (updated with Related Work): https://es.overleaf.com/read/jkpmphqmhkqq
+Link to overleaf paper: https://es.overleaf.com/read/jkpmphqmhkqq
+Link to presentation slides: https://docs.google.com/presentation/d/1mnWuenpjyBr6ViBmbNpcGeiCicX1kMv7wvfGmLtuBk0/edit?usp=sharing
 
 ## Reports
 
@@ -32,6 +33,10 @@ Link to overleaf (updated with Related Work): https://es.overleaf.com/read/jkpmp
 * Team 06 slides: https://docs.google.com/presentation/d/1qqR4o1meUzZMC8N6lFSGuocggcT9y1Gy_QTy-YR7ktk/edit?usp=sharing
 * Slides: https://docs.google.com/presentation/d/1GoxeIPR7aRU02mNyxeSnqRkAa7uV55FtJaIlOdWdFMM/edit#slide=id.p
 * Code: Week 5
+
+### Week 6
+* Slides:  https://docs.google.com/presentation/d/1ydBIwr2Vx4eIkHH6BRrn0nSDtqjCqCaG16S4zq_4Se8/edit#slide=id.g7392858802_30_0
+* Code: Week 6
 
 ## Credits
 
