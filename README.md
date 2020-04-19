@@ -4,7 +4,7 @@ Team 06 repository
 
 # Documentation
 
-Link to overleaf paper: https://es.overleaf.com/read/jkpmphqmhkqq
+Link to overleaf paper: https://www.overleaf.com/read/rphxcrxhpgmd
 
 Link to presentation slides: https://docs.google.com/presentation/d/1mnWuenpjyBr6ViBmbNpcGeiCicX1kMv7wvfGmLtuBk0/edit?usp=sharing
 
