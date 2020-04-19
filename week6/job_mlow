@@ -1,0 +1,12 @@
+#!/bin/bash
+#SBATCH -n 4 # Number of cores
+#SBATCH -p mlow # Partition to submit to
+#SBATCH --mem 8192 # 8GB memory
+#SBATCH --gres gpu:1 # Request of 1 gpu
+#SBATCH -o logs/%x_%u_%j.out # File to which STDOUT will be written
+#SBATCH -e logs/%x_%u_%j.err # File to which STDERR will be written
+#python main.py --zoo-model "COCO-Detection/faster_rcnn_R_101_FPN_3x.yaml" --do-week3 --task-week3-configuration "task2" --zoo-model-name "R101-FPN" --model-name "Task-Week3" --lr 0.00025 --iterations 5000 --th 0.8
+#python main.py --zoo-model "COCO-Detection/faster_rcnn_R_101_FPN_3x.yaml" --do-week3 --task-week3-configuration "task1" --zoo-model-name "R101-FPN" --model-name "Task-Week3" --lr 0.00025 --iterations 5000 --th 0.8
+#python main.py --zoo-model "Cityscapes/mask_rcnn_R_50_FPN.yaml" --do-task-a --task-a-configuration "configuration_2" --zoo-model-name "Cityscapes" --model-name "Task-a-conf2-NO-DA" --lr 0.00025 --iterations 5000 --th 0.8
+#python main.py --zoo-model "COCO-InstanceSegmentation/mask_rcnn_R_101_FPN_3x.yaml" --do-task-b --task-b-configuration "configuration_2" --zoo-model-name "Cityscapes" --model-name "Task-B-3-FineTuned" --lr 0.00025 --iterations 5000 --th 0.8
+python main.py --zoo-model "Cityscapes/mask_rcnn_R_50_FPN.yaml" --do-task-a --task-a-configuration "configuration_1" --zoo-model-name "Cityscapes" --model-name "Task-a-conf1" --lr 0.00025 --iterations 5000 --th 0.8
